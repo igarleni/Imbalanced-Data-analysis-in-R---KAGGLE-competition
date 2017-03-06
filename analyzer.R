@@ -1,16 +1,10 @@
-#
-pv1math_train <- read_csv("pv1math-tra.csv")
-pv1math_test <- read_csv("pv1math-tst.csv")
-library(unbalanced)
-
-
 #...##...############...##...#
 #..#..#..## README ##..#..#..#
 #.#....#.############.#....#.#
 
 #1.-Execute {Data preprocessing and setup}
 
-#2.-Choose one or many {Imbalance algorithms}, choose your input variables and execute them 
+#2.-Choose one or many {Imbalance algorithms}, choose your input variables and execute them
 
 #3.-Execute {Data preprocessing and setup}
 
@@ -24,6 +18,12 @@ library(unbalanced)
 ##################################
 ## Data preprocessing and setup ##
 ##################################
+
+#
+library(readr)
+pv1math_train <- read_csv("pv1math-tra.csv")
+pv1math_test <- read_csv("pv1math-tst.csv")
+library(unbalanced)
 
 #Imbalance ratio
 nClass1 <- sum(pv1math_train$PV1MATH == 1)
@@ -50,25 +50,51 @@ input <- pv1math_train[-n]
 ####MULTIPLE ALGORITHMS:
 #execute {Multiple algorithm postprocessing} between imbalanced algorithms
 
-
 ####
 #Algorithms
 ####
 
-##SMOTE
-data<-ubBalance(X= input, Y=output, type="ubSMOTE", percOver=300, percUnder=150, verbose=TRUE)
-balancedData<-cbind(data$X,data$Y)
+#Oversampling
+data <- ubOver(X = input, Y = output, k = 0, verbose=TRUE)
+
+#Undersampling
+data <- ubUnder(X = input, Y = output, perc = 50, method = "percPos", w = NULL)
+
+#SMOTE
+data <- ubSMOTE(X= input, Y=output, k = 5, perc.over=200, perc.under=200, verbose=TRUE)
+
+#OSS
+data <- ubOSS(X = input, Y = output, verbose = TRUE)
+
+#CNN
+data <- ubCNN(X = input, Y = output, k = 1, verbose = TRUE)
+
+#ENN
+data <- ubENN(X = input, Y = output, k = 3, verbose = TRUE)
+
+#NCL
+data <- ubNCL(X = input, Y = output, k = 3, verbose = TRUE)
+
+#Tomek
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
 
 
 ############
 ## Multiple algorithm postprocessing
 ############
-
+balancedData<-cbind(data$X,data$Y)
+colnames(balancedData) <- colnames(pv1math_train)
+output <- factor(balancedData$PV1MATH)
+input <- balancedData[-n]
 
 
 ##############################
 ## Imbalance postprocessing ##
 ##############################
+
+#Data postprocessing
+balancedData<-cbind(data$X,data$Y)
+colnames(balancedData) <- colnames(pv1math_train)
 
 #5 cross fold validation setup
 neg <- (1:dim(balancedData)[1])[balancedData$PV1MATH==0]
@@ -93,6 +119,7 @@ for( i in 1:5){
   knn.pred <- c(knn.pred, predictions)
 }
 
+#
 
 #########################
 ## Results performance ##
