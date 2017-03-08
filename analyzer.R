@@ -1,3 +1,5 @@
+#
+
 #...##...############...##...#
 #..#..#..## README ##..#..#..#
 #.#....#.############.#....#.#
@@ -14,6 +16,9 @@
 
 #6.-Apply over KAGGLE test dataset using {Generate KAGGLE output}
 
+##
+##At the end of this script are different models tested and its accuracy by using this process.
+##
 
 ##################################
 ## Data preprocessing and setup ##
@@ -21,9 +26,13 @@
 
 #
 library(readr)
+library(unbalanced)
+library(class)
+
+
+#Read file
 pv1math_train <- read_csv("pv1math-tra.csv")
 pv1math_test <- read_csv("pv1math-tst.csv")
-library(unbalanced)
 
 #Imbalance ratio
 nClass1 <- sum(pv1math_train$PV1MATH == 1)
@@ -92,39 +101,69 @@ input <- balancedData[-n]
 ## Imbalance postprocessing ##
 ##############################
 
-#Data postprocessing
+##Data postprocessing
 balancedData<-cbind(data$X,data$Y)
 colnames(balancedData) <- colnames(pv1math_train)
 
-#5 cross fold validation setup
-neg <- (1:dim(balancedData)[1])[balancedData$PV1MATH==0]
-pos <- (1:dim(balancedData)[1])[balancedData$PV1MATH==1]
-CVperm_pos <- matrix(sample(pos,length(pos)), ncol=5, byrow=T)
-CVperm_neg <- matrix(sample(neg,length(neg)), ncol=5, byrow=T)
-CVperm <- rbind(CVperm_pos, CVperm_neg)
-
+##5 cross fold validation setup
+indexes <- seq(1,nrow(balancedData),by=1)
+trainPartitions <- createFolds(indexes, k = 10,
+                                        returnTrain = TRUE)
+testPartitions <- list()
+for(i in 1:10){
+  testPartitions[[i]] <- indexes[-trainPartitions[[i]]]
+}
+errors <- c()
+hits <- c()
 
 ###############################
 ## Classification algorithms ##
 ###############################
 
-#5CFV with 3NN
-library(class)
-knn.pred = NULL
-for( i in 1:5){
-  #change this line if you want other clasification function
-  predictions <- knn(balancedData[-CVperm[,i], -3], balancedData[CVperm[,i], -3],
-                     balancedData[-CVperm[,i], 3], k = 3)
-  #
-  knn.pred <- c(knn.pred, predictions)
+
+######
+## KNN
+######
+#Variable input
+kn = 1
+#Algorithm
+for(i in 1:10){
+  #predict over test fold
+  predictions <- knn(train = balancedData[trainPartitions[[i]], -n], test = balancedData[testPartitions[[i]], -n],
+                        cl = balancedData[trainPartitions[[i]], n], k=kn)
+  #Save statistics
+  hits[i] <- sum(balancedData[testPartitions[[i]], n] == predictions)
+  errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
 }
 
-#
+##########
+## Bagging
+##########
+for(i in 1:10){
+  #Generate model
+  model <- adabag::bagging(Class ~ ., 
+                            data = Vehicle[trainPartitions[[i]], ], 
+                            control=rpart::rpart.control(maxdepth=5, minsplit=15))
+  #predict over test fold
+  predictions <- adabag::predict.bagging(modelo, 
+                                          newdata=Vehicle[testPartitions[[i]], -n ])
+  
+  #Save statistics
+  hits[i] <- sum(balancedData[testPartitions[[i]], n] == predictions)
+  errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
+}
+
+
 
 #########################
 ## Results performance ##
 #########################
 
+#Accuracy
+accuracy <- mean(hits/(errors+hits))
+accuracy
+
+#others
 acc <- sum((pv1math_train$PV1MATH[as.vector(CVperm)] == 0 & knn.pred == 1) 
            | (pv1math_train$PV1MATH[as.vector(CVperm)] == 1 & knn.pred == 2)) / (nClass0 + nClass1)
 tpr <- sum(pv1math_train$PV1MATH[as.vector(CVperm)] == 0 & knn.pred == 1) / nClass0
@@ -135,5 +174,19 @@ gmean <- sqrt(tpr * tnr)
 ############################
 ## Generate KAGGLE output ##
 ############################
+
+
+
+
+
+###################
+## MODELS TESTED ##
+###################
+
+###SMOTE + KNN
+#SMOTE <- perc.over=200, perc.under=200
+#KNN <- k = 1
+#accuracy on CFV <- 0.9621914
+#accuracy on KAGGLE <- 
 
 
