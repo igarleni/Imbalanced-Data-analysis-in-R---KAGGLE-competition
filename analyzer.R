@@ -217,6 +217,7 @@ kagglePrediction <- predict(model, newdata = pv1math_test[, -1])
 ######
 ## Bagging
 ######
+library(rpart)
 library(adabag)
 #Variables input
 maxdp = 5
@@ -230,23 +231,26 @@ for(i in 1:10){
   #predict over test fold
   predictions <- adabag::predict.bagging(model, newdata = balancedData[testPartitions[[i]], -n])
   #Save statistics
-  hits[i] <- sum(balancedData[testPartitions[[i]], n] == predictions)
+  hits[i] <- sum(balancedData[testPartitions[[i]], n] == predictions$class)
   errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
 }
 #Predict on KAGGLE test data
 model <- adabag::bagging(PV1MATH ~ ., data = balancedData, 
                          control=rpart::rpart.control(maxdepth=maxdp, minsplit=minsplt))
-kagglePrediction <- adabag::predict.bagging(model, newdata = pv1math_test[, -1])
+baggingPrediction <- adabag::predict.bagging(model, newdata = as.data.frame(pv1math_test[, -1]))
+kagglePrediction <- baggingPrediction$class
 
 ######
 ## Boosting
 ######
+library(rpart)
 library(adabag)
 #Variables input
 maxdp = 2
 finalm = 10
 #Algorithm
 for(i in 1:10){
+  print(i)
   #generate model
   model <- adabag::boosting(PV1MATH ~ ., 
                             data = balancedData[trainPartitions[[i]], ],
@@ -255,13 +259,15 @@ for(i in 1:10){
   #predict over test fold
   predictions <- adabag::predict.boosting(model, newdata = balancedData[testPartitions[[i]], -n])
   #Save statistics
-  hits[i] <- sum(balancedData[testPartitions[[i]], n] == predictions)
+  hits[i] <- sum(balancedData[testPartitions[[i]], n] == predictions$class)
   errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
 }
 #Predict on KAGGLE test data
 model <- adabag::boosting(PV1MATH ~ ., data = balancedData, mfinal = finalm, 
                           control = rpart::rpart.control(maxdepth = maxdp))
-kagglePrediction <- adabag::predict.boosting(model, newdata = pv1math_test[, -1])
+boostingPrediction <- adabag::predict.boosting(model, newdata = as.data.frame(pv1math_test[, -1]))
+kagglePrediction <- boostingPrediction$class
+
 
 ######
 ## Random Forest
@@ -348,6 +354,10 @@ write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE
 #accuracy on CFV <- 0.7287119
 #accuracy on KAGGLE <- 0.68914
 
-###Tomek multiple (IR 1.21337) + 
-#accuracy on CFV <- 
-#accuracy on KAGGLE <- 
+###Tomek multiple (IR 1.209707) + Bagging
+#accuracy on CFV <- 0.76382
+#accuracy on KAGGLE <- 0.71122
+
+###Tomek multiple (IR 1.217949) + Boosting
+#accuracy on CFV <- 0.7580188
+#accuracy on KAGGLE <- 0.70798
