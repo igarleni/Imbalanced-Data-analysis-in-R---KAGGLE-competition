@@ -96,6 +96,11 @@ colnames(balancedData) <- colnames(pv1math_train)
 output <- factor(balancedData$PV1MATH)
 input <- balancedData[-n]
 
+##Imbalance ratio of balanced data
+nClass1 <- sum(balancedData$PV1MATH == 1)
+nClass0 <- sum(balancedData$PV1MATH == 0)
+IR <- nClass0 / nClass1
+IR
 
 ##############################
 ## Imbalance postprocessing ##
@@ -274,7 +279,7 @@ kagglePrediction <- boostingPrediction$class
 ######
 library(randomForest)
 #Variables input
-ntrees = 10
+ntrees = 100
 #Algorithm
 for(i in 1:10){
   #generate model
@@ -361,3 +366,15 @@ write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE
 ###Tomek multiple (IR 1.217949) + Boosting
 #accuracy on CFV <- 0.7580188
 #accuracy on KAGGLE <- 0.70798
+
+###Tomek multiple (IR 1.217949) + RandomForest (30 trees)
+#accuracy on CFV <- 0.7820201
+#accuracy on KAGGLE <- 0.70709
+
+###Tomek multiple (IR 1.217949) + RandomForest (100 trees)
+#accuracy on CFV <- 0.7981002
+#accuracy on KAGGLE <- (POR SUBIR, YA ESTA EN EL CSV)
+
+###
+#accuracy on CFV <- 
+#accuracy on KAGGLE <- 
