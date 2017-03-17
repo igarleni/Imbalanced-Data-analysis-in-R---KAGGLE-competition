@@ -373,7 +373,15 @@ write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE
 
 ###Tomek multiple (IR 1.217949) + RandomForest (100 trees)
 #accuracy on CFV <- 0.7981002
-#accuracy on KAGGLE <- (POR SUBIR, YA ESTA EN EL CSV)
+#accuracy on KAGGLE <- 0.71763
+
+###Tomek multiple (IR 1.217949) + RandomForest (500 trees)
+#accuracy on CFV <- 0.8001366
+#accuracy on KAGGLE <- 0.72588
+
+###OSS multiple (IR 1.239927) + RandomForest (100 trees)
+#accuracy on CFV <- 0.8021281
+#accuracy on KAGGLE <- 0.72084
 
 ###
 #accuracy on CFV <- 
