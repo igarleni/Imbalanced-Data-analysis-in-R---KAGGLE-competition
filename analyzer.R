@@ -30,7 +30,6 @@ library(unbalanced)
 library(class)
 library(caret)
 
-
 #Read file
 pv1math_train <- read_csv("pv1math-tra.csv")
 pv1math_test <- read_csv("pv1math-tst.csv")
@@ -298,6 +297,7 @@ kagglePrediction <- predict(model, newdata = pv1math_test[, -1])
 ######
 ## SVM
 ######
+library(kernlab)
 #Algorithm
 for(i in 1:10){
   #generate model
@@ -383,6 +383,26 @@ write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE
 #accuracy on CFV <- 0.8021281
 #accuracy on KAGGLE <- 0.72084
 
-###
+###OSS multiple (IR 1.212454) + SVM
+#accuracy on CFV <- 0.8538826
+#accuracy on KAGGLE <- 0.71485
+
+###OSS multiple (IR 1.425824) + SVM
+#accuracy on CFV <- 0.8403523
+#accuracy on KAGGLE <- 0.73598
+
+###OSS multiple (IR 1.425824) + RandomForest (100 trees)
+#accuracy on CFV <- 0.8048447
+#accuracy on KAGGLE <- 0.72774
+
+###Tomek multiple (IR 1.428571) + SVM
+#accuracy on CFV <- 0.8442786
+#accuracy on KAGGLE <- 0.73598
+
+###OSS (IR 1.582418) + SVM
+#accuracy on CFV <- 0.8421792
+#accuracy on KAGGLE <- 0.74703
+
+###Tomek (IR 1.586996) + SVM
 #accuracy on CFV <- 
 #accuracy on KAGGLE <- 
