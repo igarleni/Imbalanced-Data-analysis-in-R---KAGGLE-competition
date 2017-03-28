@@ -302,7 +302,8 @@ library(kernlab)
 for(i in 1:10){
   #generate model
   model <- train(PV1MATH ~ ., data = balancedData[testPartitions[[i]], ], method = "svmRadial",
-                 preProc = c("center", "scale"))
+                 preProc = c("center", "scale"),
+                 classProbs =  TRUE)
   #predict over test fold
   predictions <- predict(model, newdata = balancedData[testPartitions[[i]], -n])
   #Save statistics
@@ -312,8 +313,9 @@ for(i in 1:10){
 #Predict on KAGGLE test data
 model <- train(PV1MATH ~ ., 
                data = balancedData, 
-               method = "svmRadial", preProc = c("center", "scale"))
-kagglePrediction <- predict(model, newdata = pv1math_test[, -1])
+               method = "svmRadial", preProc = c("center", "scale"),
+               prob.model=TRUE)
+kagglePrediction <- predict(model, newdata = pv1math_test[, -1], type = "prob")
 
 
 #########################
@@ -335,6 +337,17 @@ gmean <- sqrt(tpr * tnr)
 ############################
 
 kagglePrediction.final <- cbind(pv1math_test[,1], kagglePrediction)
+colnames(kagglePrediction.final) <- c("Id","Prediction")
+write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE, sep = ",",
+            row.names = FALSE)
+
+
+########################################
+## Generate KAGGLE output (prob mode) ##
+########################################
+
+kagglePrediction.final <- cbind(pv1math_test[,1], kagglePrediction)
+kagglePrediction.final <- kagglePrediction.final[,c(1,2)]
 colnames(kagglePrediction.final) <- c("Id","Prediction")
 write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE, sep = ",",
             row.names = FALSE)
@@ -403,6 +416,10 @@ write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE
 #accuracy on CFV <- 0.8421792
 #accuracy on KAGGLE <- 0.74703
 
-###Tomek (IR 1.586996) + SVM
-#accuracy on CFV <- 
-#accuracy on KAGGLE <- 
+
+####################################
+## predictions with probabilities ##
+####################################
+
+###OSS (IR 1.583333) + SVM
+#accuracy on KAGGLE <- 0.82607
