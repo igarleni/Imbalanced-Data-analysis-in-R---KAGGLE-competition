@@ -77,7 +77,13 @@ IR
 source("variableSelectionAF.R")
 #show results
 final.weight.ordered
-
+#create formula
+idClass <- length(names(trainData))
+classVariable <- names(trainData)[idClass]
+formulaClassSelected <- as.formula(paste(classVariable, "~ MATHEFF + ESCS + ANXMAT + SCMAT + misced + SMATBEH + fisced + CLCUSE1 + INTMAT + FAILMAT + ST15Q01", sep = ""))
+formulaClassAll <- as.formula(paste(classVariable, "~.", sep = ""))
+#choose between variable selection or full variables
+formulaClass <- formulaClassAll
 
 ###############################
 ## Classification algorithms ##
@@ -107,7 +113,7 @@ finalm = 10
 source("boosting.R")
 
 ## Random Forest
-ntrees = 100
+ntrees = 50
 source("randomForest.r")
 
 ## SVM

@@ -7,7 +7,7 @@ library(kernlab)
 ######
 for(i in 1:10){
   #generate model
-  model <- train(PV1MATH ~ ., data = balancedData[testPartitions[[i]], ], method = "svmRadial",
+  model <- train(formulaClass, data = balancedData[testPartitions[[i]], ], method = "svmRadial",
                  preProc = c("center", "scale"),
                  prob.model =  TRUE)
   #predict over test fold
@@ -17,7 +17,7 @@ for(i in 1:10){
   errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
 }
 #Predict on KAGGLE test data
-model <- train(PV1MATH ~ ., 
+model <- train(formulaClass, 
                data = balancedData, 
                method = "svmRadial", preProc = c("center", "scale"),
                prob.model=TRUE)

@@ -10,7 +10,7 @@ library(adabag)
 for(i in 1:10){
   print(i)
   #generate model
-  model <- adabag::boosting(PV1MATH ~ ., 
+  model <- adabag::boosting(formulaClass, 
                             data = balancedData[trainPartitions[[i]], ],
                             mfinal = finalm, 
                             control = rpart::rpart.control(maxdepth = maxdp))
@@ -21,7 +21,7 @@ for(i in 1:10){
   errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
 }
 #Predict on KAGGLE test data
-model <- adabag::boosting(PV1MATH ~ ., data = balancedData, mfinal = finalm, 
+model <- adabag::boosting(formulaClass, data = balancedData, mfinal = finalm, 
                           control = rpart::rpart.control(maxdepth = maxdp))
 boostingPrediction <- adabag::predict.boosting(model, newdata = as.data.frame(testData[, -1]))
 kagglePrediction <- boostingPrediction$class

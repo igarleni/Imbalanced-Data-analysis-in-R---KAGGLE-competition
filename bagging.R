@@ -8,7 +8,7 @@ library(adabag)
 #############
 for(i in 1:10){
   #generate model
-  model <- adabag::bagging(PV1MATH ~ ., 
+  model <- adabag::bagging(formulaClass, 
                            data = balancedData[trainPartitions[[i]], ], 
                            control=rpart::rpart.control(maxdepth=maxdp, minsplit=minsplt))
   #predict over test fold
@@ -18,7 +18,7 @@ for(i in 1:10){
   errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
 }
 #Predict on KAGGLE test data
-model <- adabag::bagging(PV1MATH ~ ., data = balancedData, 
+model <- adabag::bagging(formulaClass, data = balancedData, 
                          control=rpart::rpart.control(maxdepth=maxdp, minsplit=minsplt))
 baggingPrediction <- adabag::predict.bagging(model, newdata = as.data.frame(testData[, -1]))
 kagglePrediction <- baggingPrediction$class

@@ -6,7 +6,7 @@
 balancedData$PV1MATH = as.numeric(balancedData$PV1MATH)
 for(i in 1:10){
   #generate model
-  model <-glm(PV1MATH~., data= balancedData[trainPartitions[[i]], ])
+  model <-glm(formulaClass, data= balancedData[trainPartitions[[i]], ])
   #predict over test fold
   predictions <- predict(model, newdata = balancedData [testPartitions[[i]], -n])
   for(j in 1:length(predictions)){
@@ -20,5 +20,5 @@ for(i in 1:10){
   errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
 }
 #Predict on KAGGLE test data
-model <-glm(PV1MATH~., data= balancedData)
+model <-glm(formulaClass, data= balancedData)
 kagglePrediction <- predict(model, newdata = testData[, -1])

@@ -5,8 +5,6 @@ library(party)
 ###############################################
 ## Conditional inference Classification Tree ##
 ###############################################
-variableClass <- names(balancedData)[n]
-formulaClass <- as.formula(paste(variableClass,"~.",sep=""))
 for(i in 1:10){
   #generate model
   model <- ctree(formulaClass, balancedData[trainPartitions[[i]], ])
