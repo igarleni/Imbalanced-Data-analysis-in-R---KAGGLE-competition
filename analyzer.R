@@ -77,13 +77,15 @@ IR
 source("variableSelectionAF.R")
 #show results
 final.weight.ordered
+#MATHEFF * ESCS * ANXMAT * SCMAT * misced * SMATBEH * fisced * CLCUSE1 * INTMAT * FAILMAT *ST15Q01
 #create formula
 idClass <- length(names(trainData))
 classVariable <- names(trainData)[idClass]
-formulaClassSelected <- as.formula(paste(classVariable, "~ MATHEFF + ESCS + ANXMAT + SCMAT + misced + SMATBEH + fisced + CLCUSE1 + INTMAT + FAILMAT + ST15Q01", sep = ""))
+formulaClassSelected <- as.formula(paste(classVariable, "~ MATHEFF + ESCS + ANXMAT + SCMAT + misced", sep = ""))
 formulaClassAll <- as.formula(paste(classVariable, "~.", sep = ""))
 #choose between variable selection or full variables
 formulaClass <- formulaClassAll
+
 
 ###############################
 ## Classification algorithms ##
@@ -126,11 +128,6 @@ source("svm.R")
 #Accuracy
 accuracy <- mean(hits/(errors+hits))
 accuracy
-
-#Others
-tpr <- sum(pv1math_train$PV1MATH[as.vector(CVperm)] == 0 & knn.pred == 1) / nClass0
-tnr <- sum(pv1math_train$PV1MATH[as.vector(CVperm)] == 1 & knn.pred == 2) / nClass1
-gmean <- sqrt(tpr * tnr)
 
 
 ############################
@@ -222,3 +219,20 @@ write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE
 
 #OSS (IR 1.56685) + SVM
 #accuracy on KAGGLE <- 0.82631
+
+#Tomek (IR 1.586996) + SVM with variable selection
+#accuracy on 10cfv = 0.8184077
+##accuracy on KAGGLE <- 0.81833
+
+#Tomek (IR 1.586996) + SVM with variable selection multiplying
+#accuracy on 10cfv = 0.8909751
+##accuracy on KAGGLE <- 0.76495
+
+#Tomek (IR 1.586996) + randomForest with variable selection multiplying
+#accuracy on 10cfv = 0.7766337
+##accuracy on KAGGLE <- 0.72226
+
+#Tomek (IR 1.586996) + SVM kernlab library and variable selection
+#accuracy on 10cfv = 1
+##accuracy on KAGGLE <- 0.79567
+

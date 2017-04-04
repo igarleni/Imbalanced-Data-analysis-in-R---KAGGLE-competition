@@ -2,23 +2,29 @@
 
 library(kernlab)
 
-######
-## SVM
-######
+#https://cran.r-project.org/web/packages/kernlab/kernlab.pdf
+#########
+## SVM ##
+#########
 for(i in 1:10){
   #generate model
-  model <- train(formulaClass, data = balancedData[testPartitions[[i]], ], method = "svmRadial",
-                 preProc = c("center", "scale"),
-                 prob.model =  TRUE)
+  model <- ksvm(formulaClass,data=balancedData[testPartitions[[i]], ],
+                scaled = TRUE, type = "nu-svc", nu = 0.4,
+                prob.model=TRUE)
   #predict over test fold
-  predictions <- predict(model, newdata = balancedData[testPartitions[[i]], -n])
+  predictions <- predict(model,balancedData[testPartitions[[i]], -n],type="probabilities")
   #Save statistics
+  for(j in 1:length(predictions)){
+    if (predictions[j] < 0.5)
+      predictions[j] = 0
+    else
+      predictions[j] = 1
+  }
   hits[i] <- sum(balancedData[testPartitions[[i]], n] == predictions)
   errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
 }
 #Predict on KAGGLE test data
-model <- train(formulaClass, 
-               data = balancedData, 
-               method = "svmRadial", preProc = c("center", "scale"),
-               prob.model=TRUE)
-kagglePrediction <- predict(model, newdata = testData[, -1], type = "prob")
+model <- ksvm(formulaClass,data=balancedData, 
+              scaled = TRUE,
+              prob.model=TRUE)
+kagglePrediction <- predict(model, testData[, -1], type = "probabilities")
