@@ -2,7 +2,7 @@
 
 # Multiple algorithm postprocessing
 balancedData<-cbind(data$X,data$Y)
-colnames(balancedData) <- colnames(balancedData)
+colnames(balancedData) <- colnames(trainData)
 output <- factor(balancedData$PV1MATH)
 input <- balancedData[-n]
 

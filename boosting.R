@@ -24,4 +24,4 @@ for(i in 1:10){
 model <- adabag::boosting(formulaClass, data = balancedData, mfinal = finalm, 
                           control = rpart::rpart.control(maxdepth = maxdp))
 boostingPrediction <- adabag::predict.boosting(model, newdata = as.data.frame(testData[, -1]))
-kagglePrediction <- boostingPrediction$class
+kagglePrediction <- boostingPrediction$prob

@@ -9,7 +9,9 @@ library(kernlab)
 for(i in 1:10){
   #generate model
   model <- ksvm(formulaClass,data=balancedData[testPartitions[[i]], ],
-                scaled = TRUE, type = "nu-svc", nu = 0.4,
+                scaled = TRUE, type = typeKSVM,
+                kernel = kernelSVM,
+                C = cSVM,
                 prob.model=TRUE)
   #predict over test fold
   predictions <- predict(model,balancedData[testPartitions[[i]], -n],type="probabilities")
@@ -25,6 +27,8 @@ for(i in 1:10){
 }
 #Predict on KAGGLE test data
 model <- ksvm(formulaClass,data=balancedData, 
-              scaled = TRUE,
+              scaled = TRUE, type = typeKSVM,
+              kernel = kernelSVM,
+              C = cSVM,
               prob.model=TRUE)
 kagglePrediction <- predict(model, testData[, -1], type = "probabilities")

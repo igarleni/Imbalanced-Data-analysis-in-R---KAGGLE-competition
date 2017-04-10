@@ -40,7 +40,7 @@ library(unbalanced)
 #Oversampling
 data <- ubOver(X = input, Y = output, k = 0, verbose=TRUE)
 #Undersampling
-data <- ubUnder(X = input, Y = output, perc = 50, method = "percPos", w = NULL)
+data <- ubUnder(X = input, Y = output, perc = 39, method = "percPos", w = NULL)
 #SMOTE
 data <- ubSMOTE(X= input, Y=output, k = 5, perc.over=200, perc.under=200, verbose=TRUE)
 #OSS
@@ -115,10 +115,17 @@ finalm = 10
 source("boosting.R")
 
 ## Random Forest
-ntrees = 50
+ntrees = 100
 source("randomForest.r")
 
 ## SVM
+#type Classification --> C-svc, nu-svc, C-bsvc, spoc-svc, kbb-svc, one-svc
+#type Regression --> eps-svr, nu-svr, eps-bsvr
+typeKSVM = "C-svc"
+#
+kernelSVM = "polydot"
+#default = 1
+cSVM = 0.5
 source("svm.R")
 
 
@@ -236,3 +243,41 @@ write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE
 #accuracy on 10cfv = 1
 ##accuracy on KAGGLE <- 0.79567
 
+#Undersampling 38.69 (IR 1.584249) + boosting
+#accuracy on 10cfv = 0.7547634
+##accuracy on KAGGLE <- 0.79754
+
+#Undersampling 38.69 (IR 1.584249) + SVM
+#accuracy on 10cfv = 1
+##accuracy on KAGGLE <- 0.82467
+
+###Tomek multiple (IR 1.232601) + SVM
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.80667
+
+###Tomek (IR 1.586996) + SVM
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.80667
+
+###Tomek (IR 1.586996) + RandomForest 100 trees
+#accuracy on CFV <- 0.8021079
+#accuracy on KAGGLE <- 0.72000
+
+##Undersampling (IR 1.564103) and Oversampling (IR 1) + SVM
+#accuracy on KAGGLE <- 0.81617
+
+###OSS (IR 1.586996) + SVM all variables polydot c-svc
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.82745 
+
+###OSS (IR 1.586996) + SVM all variables polydot c-svc c=1.1
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.82746(BEST ONE)
+
+###OSS (IR 1.586996) + SVM all variables polydot c-svc c=2
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.82744
+
+###OSS (IR 1.586996) + SVM all variables polydot c-svc c=0.5
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.82742
