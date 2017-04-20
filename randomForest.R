@@ -14,8 +14,7 @@ for(i in 1:10){
   #predict over test fold
   predictions <- predict(model, newdata = balancedData[testPartitions[[i]], -n])
   #Save statistics
-  hits[i] <- sum(balancedData[testPartitions[[i]], n] == predictions)
-  errors[i] <- length(balancedData[testPartitions[[i]], n]) - hits[i]
+  aucPred[i] <- auc(predictions[1])
 }
 #Predict on KAGGLE test data
 model <- randomForest::randomForest(formulaClass, data=balancedData, ntree=ntrees)

@@ -33,14 +33,6 @@ formulaClassAll <- as.formula(paste(classVariable, "~.", sep = ""))
 formulaClass <- formulaClassAll
 
 
-#########################
-## Results performance ##
-#########################
-#Accuracy
-accuracy <- mean(hits/(errors+hits))
-accuracy
-
-
 ####################################
 ## predictions with probabilities ##
 ####################################
@@ -256,6 +248,13 @@ cSVM = 0.5
 source("svm.R")
 #accuracy on CFV <- 1
 #accuracy on KAGGLE <- 0.82742
+
+
+#########################
+## Results performance ##
+#########################
+#AUG meassure
+aucPred <- mean(aucPred)
 
 
 ############################

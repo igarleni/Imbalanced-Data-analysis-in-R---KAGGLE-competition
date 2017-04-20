@@ -1,6 +1,6 @@
 #
-
 library(caret)
+library(pROC)
 
 ##Data postprocessing
 balancedData<-cbind(data$X,data$Y)
@@ -20,5 +20,4 @@ testPartitions <- list()
 for(i in 1:10){
   testPartitions[[i]] <- indexes[-trainPartitions[[i]]]
 }
-errors <- c()
-hits <- c()
+aucPred <- c()
