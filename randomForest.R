@@ -1,6 +1,8 @@
 #
-
 library(randomForest)
+
+#IN variables:
+# ntrees = number of trees
 
 ###################
 ## Random Forest ##

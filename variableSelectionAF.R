@@ -8,17 +8,17 @@ library(mlbench)
 ###############################################
 
 #All-variables algorithms
-weightchiSquared <- FSelector::chi.squared(PV1MATH~.,balancedData)
-#weightRelief <- relief(PV1MATH~.,balancedData, neighbours.count = 5, sample.size = 20)
+weightchiSquared <- FSelector::chi.squared(PV1MATH~.,trainData)
+#weightRelief <- relief(PV1MATH~.,trainData, neighbours.count = 5, sample.size = 20)
 
 #Discrete-variables algorithms
-weightentropInfo <- FSelector::information.gain(PV1MATH~.,balancedData)
-weightentropInfoRatio <- FSelector::gain.ratio(PV1MATH~.,balancedData)
-weightentropSymm <- FSelector::symmetrical.uncertainty(PV1MATH~.,balancedData)
-weightOneR <- FSelector::oneR(PV1MATH~.,balancedData)
+weightentropInfo <- FSelector::information.gain(PV1MATH~.,trainData)
+weightentropInfoRatio <- FSelector::gain.ratio(PV1MATH~.,trainData)
+weightentropSymm <- FSelector::symmetrical.uncertainty(PV1MATH~.,trainData)
+weightOneR <- FSelector::oneR(PV1MATH~.,trainData)
 
 #Continuous-variables algorithms
-#weightCorrelation <- FSelector::rank.correlation(PV1MATH~.,balancedData)
+#weightCorrelation <- FSelector::rank.correlation(PV1MATH~.,trainData)
 
 
 #Normalize results

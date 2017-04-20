@@ -1,8 +1,13 @@
 #
-
 library(kernlab)
-
 #https://cran.r-project.org/web/packages/kernlab/kernlab.pdf
+
+#IN variables:
+# typeKSVM = "C-svc" (Classification --> C-svc, nu-svc, C-bsvc, spoc-svc, kbb-svc, one-svc
+#     Regression --> eps-svr, nu-svr, eps-bsvr)
+# kernelSVM = "polydot"
+# cSVM = 1
+
 #########
 ## SVM ##
 #########

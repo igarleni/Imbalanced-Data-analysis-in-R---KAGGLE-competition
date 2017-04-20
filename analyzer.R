@@ -1,19 +1,5 @@
 #
 
-#...##...############...##...#
-#..#..#..## README ##..#..#..#
-#.#....#.############.#....#.#
-#1.-Execute {Data preprocessing and setup}
-#2.-Choose one or many {Imbalance algorithms}, choose your input variables and execute them
-#3.-Execute {Imbalance postprocessing}
-#4.-Launch {Variable selection} and watch which variables are better
-#5.-Choose one of {Classification algorithms} and execute it
-#6.-Watch results with {Results performance}
-#7.-Generate KAGGLE test prediction file using {Generate KAGGLE output}
-##
-##At the end of this script are different models tested and its accuracy by using this process.
-##
-
 ##################################
 ## Data preprocessing and setup ##
 ##################################
@@ -22,52 +8,6 @@ rm(list = ls())
 #Read data and setup for imbalanced algorithms
 source("dataSetup.r")
 #Show imbalance ratio
-IR
-
-
-##########################
-## Imbalance algorithms ##
-##########################
-library(unbalanced)
-####UNIQUE ALGORITHM:
-#just choose and execute
-####MULTIPLE ALGORITHMS:
-#execute {Multiple algorithm postprocessing} between imbalanced algorithms
-
-####
-#Algorithms
-####
-#Oversampling
-data <- ubOver(X = input, Y = output, k = 0, verbose=TRUE)
-#Undersampling
-data <- ubUnder(X = input, Y = output, perc = 39, method = "percPos", w = NULL)
-#SMOTE
-data <- ubSMOTE(X= input, Y=output, k = 5, perc.over=200, perc.under=200, verbose=TRUE)
-#OSS
-data <- ubOSS(X = input, Y = output, verbose = TRUE)
-#CNN
-data <- ubCNN(X = input, Y = output, k = 1, verbose = TRUE)
-#ENN
-data <- ubENN(X = input, Y = output, k = 3, verbose = TRUE)
-#NCL
-data <- ubNCL(X = input, Y = output, k = 3, verbose = TRUE)
-#Tomek
-data <- ubTomek(X = input, Y = output, verbose = TRUE)
-
-############
-## Multiple algorithm postprocessing
-############
-
-source("multipleImbalanced.R")
-#Show IR
-IR
-
-
-##############################
-## Imbalance postprocessing ##
-##############################
-source("imbalancePostprocessing.R")
-#Show imbalance ratio IR
 IR
 
 
@@ -81,52 +21,16 @@ final.weight.ordered
 #create formula
 idClass <- length(names(trainData))
 classVariable <- names(trainData)[idClass]
-formulaClassSelected <- as.formula(paste(classVariable, "~ MATHEFF + ESCS + ANXMAT + SCMAT + misced", sep = ""))
+formulaClassSelected <- as.formula(paste(classVariable, "~ MATHEFF + ESCS + ANXMAT + SCMAT +
+                                         misced + SMATBEH + fisced + CLCUSE1 + INTMAT + FAILMAT
+                                         + ST15Q01", sep = ""))
+formulaClassSelectedMultiplying <- as.formula(paste(classVariable, "~ MATHEFF * ESCS * ANXMAT *
+                                                    SCMAT * misced * SMATBEH * fisced *
+                                                    CLCUSE1 * INTMAT * FAILMAT *ST15Q01",
+                                                    sep = ""))
 formulaClassAll <- as.formula(paste(classVariable, "~.", sep = ""))
 #choose between variable selection or full variables
 formulaClass <- formulaClassAll
-
-
-###############################
-## Classification algorithms ##
-###############################
-
-## Linear Regression
-source("linearRegression.R")
-
-## Generalized Lineal models GLM
-source("glm.R")
-
-## KNN
-kn = 1
-source("kNearestNeighbor.R")
-
-## Conditional inference Classification Tree
-source("cicTree.R")
-
-## Bagging
-maxdp = 5
-minsplt = 15
-source("bagging.R")
-
-## Boosting
-maxdp = 2
-finalm = 10
-source("boosting.R")
-
-## Random Forest
-ntrees = 100
-source("randomForest.r")
-
-## SVM
-#type Classification --> C-svc, nu-svc, C-bsvc, spoc-svc, kbb-svc, one-svc
-#type Regression --> eps-svr, nu-svr, eps-bsvr
-typeKSVM = "C-svc"
-#
-kernelSVM = "polydot"
-#default = 1
-cSVM = 0.5
-source("svm.R")
 
 
 #########################
@@ -135,6 +39,223 @@ source("svm.R")
 #Accuracy
 accuracy <- mean(hits/(errors+hits))
 accuracy
+
+
+####################################
+## predictions with probabilities ##
+####################################
+library(unbalanced)
+
+#Test 16
+###OSS (IR 1.583333) + SVM (default mode)
+data <- ubOSS(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on KAGGLE <- 0.82607
+
+#Test 17
+###Tomek (IR 1.586996) +SVM (default mode)
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on KAGGLE <- 0.82342
+
+#Test 18
+###Tomek (IR 1.428571) +SVM
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("multipleImbalanced.R")
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on KAGGLE <- 0.81818
+
+#Test 19
+#OSS (IR 1.56685) + SVM
+data <- ubOSS(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on KAGGLE <- 0.82631
+
+#Test 20
+#Tomek (IR 1.586996) + SVM with variable selection
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassSelected
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on 10cfv = 0.8184077
+##accuracy on KAGGLE <- 0.81833
+
+#Test 21
+#Tomek (IR 1.586996) + SVM with variable selection multiplying
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassSelectedMultiplying
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R") 
+#accuracy on 10cfv = 0.8909751
+##accuracy on KAGGLE <- 0.76495
+
+#Test 22
+#Tomek (IR 1.586996) + randomForest with variable selection multiplying
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassSelectedMultiplying
+ntrees = 50
+source("randomForest.R") 
+#accuracy on 10cfv = 0.7766337
+##accuracy on KAGGLE <- 0.72226
+
+#Test 23 (start using kernlab)
+#Tomek (IR 1.586996) + SVM kernlab library and variable selection
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassSelected
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on 10cfv = 1
+##accuracy on KAGGLE <- 0.79567
+
+#Test 24
+#Undersampling 38.69 (IR 1.584249) + boosting
+data <- ubUnder(X = input, Y = output, perc = 38.69, method = "percPos", w = NULL)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+maxdp = 2
+finalm = 10
+source("boosting.R")
+#accuracy on 10cfv = 0.7547634
+##accuracy on KAGGLE <- 0.79754
+
+#Test 25
+#Undersampling 38.69 (IR 1.584249) + SVM
+data <- ubUnder(X = input, Y = output, perc = 38.69, method = "percPos", w = NULL)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on 10cfv = 1
+##accuracy on KAGGLE <- 0.82467
+
+#Test 26
+###Tomek multiple (IR 1.232601) + SVM
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("multipleImbalanced.R")
+data <- ubTomek(X = input, Y = output, verbose = TRUE) #not only 2 times, more than 2
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassSelected
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on CFV <- 1 
+#accuracy on KAGGLE <- 0.80667
+
+#Test 27
+###Tomek (IR 1.586996) + SVM
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.80667
+
+#Test 28
+###Tomek (IR 1.586996) + RandomForest 100 trees
+data <- ubTomek(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+ntrees = 100
+source("randomForest.R") 
+#accuracy on CFV <- 0.8021079
+#accuracy on KAGGLE <- 0.72000
+
+#Test 29
+##Undersampling (IR 1.564103) and Oversampling (IR 1) + SVM
+data <- ubUnder(X = input, Y = output, perc = 50, method = "percPos", w = NULL)
+source("multipleImbalanced.R")
+data <- ubOver(X = input, Y = output, k = 0, verbose=TRUE)
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "rbfdot"
+cSVM = 1
+source("svm.R")
+#accuracy on KAGGLE <- 0.81617
+
+#Test 30
+###OSS (IR 1.586996) + SVM all variables polydot c-svc
+data <- ubOSS(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "polydot"
+cSVM = 1
+source("svm.R")
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.82745 
+
+#Test 31
+###OSS (IR 1.586996) + SVM all variables polydot c-svc c=1.1
+data <- ubOSS(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "polydot"
+cSVM = 1.1
+source("svm.R")
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.82746(BEST ONE)
+
+#Test 32
+###OSS (IR 1.586996) + SVM all variables polydot c-svc c=2
+data <- ubOSS(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "polydot"
+cSVM = 2
+source("svm.R")
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.82744
+
+#Test 33
+###OSS (IR 1.586996) + SVM all variables polydot c-svc c=0.5
+data <- ubOSS(X = input, Y = output, verbose = TRUE)
+source("imbalancePostprocessing.R")
+formulaClass <- formulaClassAll
+typeKSVM = "C-svc"
+kernelSVM = "polydot"
+cSVM = 0.5
+source("svm.R")
+#accuracy on CFV <- 1
+#accuracy on KAGGLE <- 0.82742
 
 
 ############################
@@ -146,10 +267,9 @@ colnames(kagglePrediction.final) <- c("Id","Prediction")
 write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE, sep = ",",
             row.names = FALSE)
 
-
-###################
-## MODELS TESTED ##
-###################
+########################################
+## MODELS TESTED (before prob models) ##
+########################################
 
 ###SMOTE + KNN
 #SMOTE <- perc.over=200, perc.under=200
@@ -209,75 +329,3 @@ write.table(kagglePrediction.final, file = "kagglePrediction.csv", quote = FALSE
 ###OSS (IR 1.582418) + SVM
 #accuracy on CFV <- 0.8421792
 #accuracy on KAGGLE <- 0.74703
-
-
-####################################
-## predictions with probabilities ##
-####################################
-
-###OSS (IR 1.583333) + SVM
-#accuracy on KAGGLE <- 0.82607
-
-###Tomek (IR 1.586996) +SVM
-#accuracy on KAGGLE <- 0.82342
-
-###Tomek (IR 1.428571) +SVM
-#accuracy on KAGGLE <- 0.81818
-
-#OSS (IR 1.56685) + SVM
-#accuracy on KAGGLE <- 0.82631
-
-#Tomek (IR 1.586996) + SVM with variable selection
-#accuracy on 10cfv = 0.8184077
-##accuracy on KAGGLE <- 0.81833
-
-#Tomek (IR 1.586996) + SVM with variable selection multiplying
-#accuracy on 10cfv = 0.8909751
-##accuracy on KAGGLE <- 0.76495
-
-#Tomek (IR 1.586996) + randomForest with variable selection multiplying
-#accuracy on 10cfv = 0.7766337
-##accuracy on KAGGLE <- 0.72226
-
-#Tomek (IR 1.586996) + SVM kernlab library and variable selection
-#accuracy on 10cfv = 1
-##accuracy on KAGGLE <- 0.79567
-
-#Undersampling 38.69 (IR 1.584249) + boosting
-#accuracy on 10cfv = 0.7547634
-##accuracy on KAGGLE <- 0.79754
-
-#Undersampling 38.69 (IR 1.584249) + SVM
-#accuracy on 10cfv = 1
-##accuracy on KAGGLE <- 0.82467
-
-###Tomek multiple (IR 1.232601) + SVM
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.80667
-
-###Tomek (IR 1.586996) + SVM
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.80667
-
-###Tomek (IR 1.586996) + RandomForest 100 trees
-#accuracy on CFV <- 0.8021079
-#accuracy on KAGGLE <- 0.72000
-
-##Undersampling (IR 1.564103) and Oversampling (IR 1) + SVM
-#accuracy on KAGGLE <- 0.81617
-
-###OSS (IR 1.586996) + SVM all variables polydot c-svc
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.82745 
-
-###OSS (IR 1.586996) + SVM all variables polydot c-svc c=1.1
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.82746(BEST ONE)
-
-###OSS (IR 1.586996) + SVM all variables polydot c-svc c=2
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.82744
-
-###OSS (IR 1.586996) + SVM all variables polydot c-svc c=0.5
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.82742

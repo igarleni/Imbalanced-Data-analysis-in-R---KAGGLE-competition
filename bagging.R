@@ -1,7 +1,10 @@
 #
-
 library(rpart)
 library(adabag)
+
+#IN variables:
+# maxdp = 5
+# minsplt = 15
 
 #############
 ## Bagging ##

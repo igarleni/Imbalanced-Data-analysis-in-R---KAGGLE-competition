@@ -12,7 +12,7 @@ IR <- nClass0 / nClass1
 #Convert class into factor
 trainData$PV1MATH <- factor(trainData$PV1MATH)
 
-#separate output and input
+#separate output and input for imbalanced algorithms
 n <- ncol (trainData)
 output <- factor(trainData$PV1MATH)
 input <- trainData[-n]

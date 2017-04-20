@@ -1,7 +1,10 @@
 #
-
 library(rpart)
 library(adabag)
+
+#IN variables:
+# maxdp = 2
+# finalm = 10
 
 ##############
 ## Boosting ##

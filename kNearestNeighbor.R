@@ -1,5 +1,8 @@
 #
 
+#@IN variables:
+# kn = number of neighbors
+
 ########################
 ## K-nearest neighbor ##
 ########################
