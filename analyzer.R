@@ -36,6 +36,9 @@ formulaClass <- formulaClassAll
 ####################################
 ## predictions with probabilities ##
 ####################################
+rm(list = ls())
+#Read data and setup for imbalanced algorithms
+source("dataSetup.r")
 library(unbalanced)
 
 #Test 16
@@ -43,22 +46,18 @@ library(unbalanced)
 data <- ubOSS(X = input, Y = output, verbose = TRUE)
 source("imbalancePostprocessing.R")
 formulaClass <- formulaClassAll
-typeKSVM = "C-svc"
-kernelSVM = "rbfdot"
-cSVM = 1
-source("svm.R")
-#accuracy on KAGGLE <- 0.82607
+source("basicSVM.R")
+#AUC on 10cfv <- 0.9100755
+#AUC on KAGGLE <- 0.82607
 
 #Test 17
 ###Tomek (IR 1.586996) +SVM (default mode)
 data <- ubTomek(X = input, Y = output, verbose = TRUE)
 source("imbalancePostprocessing.R")
 formulaClass <- formulaClassAll
-typeKSVM = "C-svc"
-kernelSVM = "rbfdot"
-cSVM = 1
-source("svm.R")
-#accuracy on KAGGLE <- 0.82342
+source("basicSVM.R")
+#AUC on 10cfv <- 0.9186421
+#AUC on KAGGLE <- 0.82342
 
 #Test 18
 ###Tomek (IR 1.428571) +SVM
@@ -67,46 +66,36 @@ source("multipleImbalanced.R")
 data <- ubTomek(X = input, Y = output, verbose = TRUE)
 source("imbalancePostprocessing.R")
 formulaClass <- formulaClassAll
-typeKSVM = "C-svc"
-kernelSVM = "rbfdot"
-cSVM = 1
-source("svm.R")
-#accuracy on KAGGLE <- 0.81818
+source("basicSVM.R")
+#AUC on 10cfv <- 0.9315692
+#AUC on on KAGGLE <- 0.81818
 
 #Test 19
 #OSS (IR 1.56685) + SVM
 data <- ubOSS(X = input, Y = output, verbose = TRUE)
 source("imbalancePostprocessing.R")
 formulaClass <- formulaClassAll
-typeKSVM = "C-svc"
-kernelSVM = "rbfdot"
-cSVM = 1
-source("svm.R")
-#accuracy on KAGGLE <- 0.82631
+source("basicSVM.R")
+#AUC on 10cfv <- 
+#AUC on on KAGGLE <- 0.82631
 
 #Test 20
 #Tomek (IR 1.586996) + SVM with variable selection
 data <- ubTomek(X = input, Y = output, verbose = TRUE)
 source("imbalancePostprocessing.R")
 formulaClass <- formulaClassSelected
-typeKSVM = "C-svc"
-kernelSVM = "rbfdot"
-cSVM = 1
-source("svm.R")
-#accuracy on 10cfv = 0.8184077
-##accuracy on KAGGLE <- 0.81833
+source("basicSVM.R")
+#AUC on 10cfv <- 0.9023085
+#AUC on on KAGGLE <- 0.81833
 
 #Test 21
 #Tomek (IR 1.586996) + SVM with variable selection multiplying
 data <- ubTomek(X = input, Y = output, verbose = TRUE)
 source("imbalancePostprocessing.R")
 formulaClass <- formulaClassSelectedMultiplying
-typeKSVM = "C-svc"
-kernelSVM = "rbfdot"
-cSVM = 1
-source("svm.R") 
-#accuracy on 10cfv = 0.8909751
-##accuracy on KAGGLE <- 0.76495
+source("basicSVM.R")
+#AUC on 10cfv <- 
+#AUC on on KAGGLE <- 0.76495
 
 #Test 22
 #Tomek (IR 1.586996) + randomForest with variable selection multiplying
@@ -115,8 +104,8 @@ source("imbalancePostprocessing.R")
 formulaClass <- formulaClassSelectedMultiplying
 ntrees = 50
 source("randomForest.R") 
-#accuracy on 10cfv = 0.7766337
-##accuracy on KAGGLE <- 0.72226
+#AUC on 10cfv <- 0.8531477
+#AUC on on KAGGLE <- 0.72226
 
 #Test 23 (start using kernlab)
 #Tomek (IR 1.586996) + SVM kernlab library and variable selection
@@ -127,8 +116,8 @@ typeKSVM = "C-svc"
 kernelSVM = "rbfdot"
 cSVM = 1
 source("svm.R")
-#accuracy on 10cfv = 1
-##accuracy on KAGGLE <- 0.79567
+#AUC on 10cfv <- 0.9191841
+#AUC on on KAGGLE <- 0.79567
 
 #Test 24
 #Undersampling 38.69 (IR 1.584249) + boosting
@@ -138,8 +127,8 @@ formulaClass <- formulaClassAll
 maxdp = 2
 finalm = 10
 source("boosting.R")
-#accuracy on 10cfv = 0.7547634
-##accuracy on KAGGLE <- 0.79754
+#AUC on 10cfv <- 
+#AUC on on KAGGLE <- 0.79754
 
 #Test 25
 #Undersampling 38.69 (IR 1.584249) + SVM
@@ -150,8 +139,8 @@ typeKSVM = "C-svc"
 kernelSVM = "rbfdot"
 cSVM = 1
 source("svm.R")
-#accuracy on 10cfv = 1
-##accuracy on KAGGLE <- 0.82467
+#AUC on 10cfv <- 
+#AUC on on KAGGLE <- 0.82467
 
 #Test 26
 ###Tomek multiple (IR 1.232601) + SVM
@@ -164,11 +153,11 @@ typeKSVM = "C-svc"
 kernelSVM = "rbfdot"
 cSVM = 1
 source("svm.R")
-#accuracy on CFV <- 1 
-#accuracy on KAGGLE <- 0.80667
+#AUC on 10cfv <- 
+#AUC on on KAGGLE <- 0.80667
 
 #Test 27
-###Tomek (IR 1.586996) + SVM
+###Tomek (IR 1.232601) + SVM
 data <- ubTomek(X = input, Y = output, verbose = TRUE)
 source("imbalancePostprocessing.R")
 formulaClass <- formulaClassAll
@@ -176,8 +165,8 @@ typeKSVM = "C-svc"
 kernelSVM = "rbfdot"
 cSVM = 1
 source("svm.R")
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.80667
+#AUC on 10cfv <- 
+#AUC on on KAGGLE <- 0.80667
 
 #Test 28
 ###Tomek (IR 1.586996) + RandomForest 100 trees
@@ -186,8 +175,8 @@ source("imbalancePostprocessing.R")
 formulaClass <- formulaClassAll
 ntrees = 100
 source("randomForest.R") 
-#accuracy on CFV <- 0.8021079
-#accuracy on KAGGLE <- 0.72000
+#AUC on 10cfv <- 
+#AUC on on KAGGLE <- 0.72000
 
 #Test 29
 ##Undersampling (IR 1.564103) and Oversampling (IR 1) + SVM
@@ -199,7 +188,8 @@ typeKSVM = "C-svc"
 kernelSVM = "rbfdot"
 cSVM = 1
 source("svm.R")
-#accuracy on KAGGLE <- 0.81617
+#AUC on 10cfv <- 0.8703026
+#AUC on on KAGGLE <- 0.81617
 
 #Test 30
 ###OSS (IR 1.586996) + SVM all variables polydot c-svc
@@ -210,8 +200,8 @@ typeKSVM = "C-svc"
 kernelSVM = "polydot"
 cSVM = 1
 source("svm.R")
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.82745 
+#AUC on 10cfv <- 0.8714406
+#AUC on on KAGGLE <- 0.82745 
 
 #Test 31
 ###OSS (IR 1.586996) + SVM all variables polydot c-svc c=1.1
@@ -222,8 +212,8 @@ typeKSVM = "C-svc"
 kernelSVM = "polydot"
 cSVM = 1.1
 source("svm.R")
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.82746(BEST ONE)
+#AUC on 10cfv <- 0.8715248
+#AUC on on KAGGLE <- 0.82746(BEST ONE)
 
 #Test 32
 ###OSS (IR 1.586996) + SVM all variables polydot c-svc c=2
@@ -234,8 +224,8 @@ typeKSVM = "C-svc"
 kernelSVM = "polydot"
 cSVM = 2
 source("svm.R")
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.82744
+#AUC on 10cfv <- 0.8718397
+#AUC on on KAGGLE <- 0.82744
 
 #Test 33
 ###OSS (IR 1.586996) + SVM all variables polydot c-svc c=0.5
@@ -246,8 +236,8 @@ typeKSVM = "C-svc"
 kernelSVM = "polydot"
 cSVM = 0.5
 source("svm.R")
-#accuracy on CFV <- 1
-#accuracy on KAGGLE <- 0.82742
+#AUC on 10cfv <- 0.86971
+#AUC on on KAGGLE <- 0.82742
 
 
 #########################

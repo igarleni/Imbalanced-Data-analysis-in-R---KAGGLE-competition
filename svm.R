@@ -21,7 +21,7 @@ for(i in 1:10){
   #predict over test fold
   predictions <- predict(model,balancedData[testPartitions[[i]], -n],type="probabilities")
   #Save statistics
-  aucPred[i] <- auc(predictions[1])
+  aucPred[i] <- auc(balancedData[testPartitions[[i]], n],as.vector(predictions[,1]))
 }
 #Predict on KAGGLE test data
 model <- ksvm(formulaClass,data=balancedData, 
